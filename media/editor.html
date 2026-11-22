@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Hex Editor</title>
+    <link rel="stylesheet" href="__flareite/kit.css" />
+    <link rel="stylesheet" href="editor.css" />
+    <script src="editor.js" defer></script>
+  </head>
+  <body>
+    <header class="flareite-toolbar toolbar">
+      <div class="flareite-group" role="group" aria-label="Go to">
+        <input
+          class="flareite-input goto"
+          id="goto"
+          type="text"
+          spellcheck="false"
+          placeholder="Go to offset"
+          title="Go to Offset (Ctrl+G): decimal, or hexadecimal with 0x"
+          aria-label="Go to offset"
+        />
+      </div>
+      <span class="flareite-separator" aria-hidden="true"></span>
+      <div class="flareite-group" role="search" aria-label="Find">
+        <input
+          class="flareite-input find"
+          id="find"
+          type="text"
+          spellcheck="false"
+          placeholder="Find text"
+          title="Find (Ctrl+F); Enter for the next match, Shift+Enter for the previous"
+          aria-label="Find"
+        />
+        <button
+          type="button"
+          class="flareite-button"
+          id="find-hex"
+          aria-pressed="false"
+          title="Find hexadecimal bytes, such as 4D 5A"
+          aria-label="Find Hexadecimal Bytes"
+        >
+          0x
+        </button>
+        <button
+          type="button"
+          class="flareite-button"
+          id="find-case"
+          aria-pressed="false"
+          title="Match Case"
+          aria-label="Match Case"
+        >
+          Aa
+        </button>
+        <span class="flareite-label matches" id="matches" aria-live="polite"></span>
+        <button
+          type="button"
+          class="flareite-button"
+          id="find-previous"
+          title="Previous Match (Shift+F3)"
+          aria-label="Previous Match"
+        >
+          <span class="flareite-icon" data-icon="arrow-up"></span>
+        </button>
+        <button
+          type="button"
+          class="flareite-button"
+          id="find-next"
+          title="Next Match (F3)"
+          aria-label="Next Match"
+        >
+          <span class="flareite-icon" data-icon="arrow-down"></span>
+        </button>
+      </div>
+      <span class="flareite-separator" aria-hidden="true"></span>
+      <div class="flareite-group" role="group" aria-label="Editing">
+        <button
+          type="button"
+          class="flareite-button mode"
+          id="mode"
+          title="Typing overwrites bytes; click or press Insert to insert them instead"
+        >
+          OVR
+        </button>
+        <button
+          type="button"
+          class="flareite-button"
+          id="undo"
+          title="Undo (Ctrl+Z)"
+          aria-label="Undo"
+          disabled
+        >
+          <span class="flareite-icon" data-icon="undo"></span>
+        </button>
+        <button
+          type="button"
+          class="flareite-button"
+          id="inspector-toggle"
+          aria-pressed="true"
+          title="Data Inspector"
+          aria-label="Data Inspector"
+        >
+          <span class="flareite-icon" data-icon="info"></span>
+        </button>
+      </div>
+      <span class="flareite-label status" id="status" aria-live="polite"></span>
+    </header>
+    <div class="body">
+      <main class="grid" id="grid" tabindex="0" aria-label="Bytes" aria-describedby="status">
+        <div class="scroller" id="scroller">
+          <div class="view">
+            <div class="columns" id="columns" aria-hidden="true"></div>
+            <div class="rows" id="rows"></div>
+          </div>
+          <div class="spacer" id="spacer"></div>
+        </div>
+        <p class="problem" id="problem" hidden></p>
+      </main>
+      <aside class="inspector" id="inspector" aria-label="Data Inspector">
+        <div class="inspector__head">
+          <span>Data Inspector</span>
+          <button
+            type="button"
+            class="flareite-button"
+            id="endian"
+            title="Read numbers little-endian (least significant byte first); click for big-endian"
+          >
+            LE
+          </button>
+        </div>
+        <dl class="inspector__values" id="values"></dl>
+      </aside>
+    </div>
+  </body>
+</html>

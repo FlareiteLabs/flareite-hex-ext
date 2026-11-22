@@ -1,0 +1,33 @@
+# Hex Editor: any file's bytes, as hexadecimal and as text, to read and
+# change. It opens files from Reopen Editor With… and from the tab binary
+# files open in. The changes are Flareite's until they're saved (API 2.2
+# editable viewers): the tab shows they're unsaved, Save writes them, and
+# closing asks first. See Flareite's docs/extensions.md#viewers.
+id = "flareite.hex-editor"
+name = "Hex Editor"
+version = "1.0.0"
+description = "View and edit any file's bytes, with search, go to offset, and a data inspector."
+author = "Flareite"
+icon = "icon.svg"
+api_version = "2"
+entrypoint = "target/wasm32-unknown-unknown/release/hex_editor.wasm"
+
+[engines]
+flareite = ">=0.1.0"
+
+[build]
+command = "cargo"
+args = ["build", "--release"]
+watch = ["src", "Cargo.toml"]
+
+# Every file, when the user chooses it: text files open as text. The page
+# draws the bytes, which it asks the extension for page by page, and sends
+# the changes the user makes to it (`webview-message` events).
+[[viewers]]
+id = "hex"
+title = "Hex Editor"
+patterns = ["*"]
+priority = "option"
+webview = "media/editor.html"
+retain_when_hidden = true
+editable = true

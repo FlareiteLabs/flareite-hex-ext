@@ -1,0 +1,286 @@
+/* The Hex Editor page: a toolbar, the bytes (offsets, hexadecimal, and
+   text columns), and the data inspector beside them. Colors are Flareite's
+   theme (--flareite-*), and the controls the kit's. */
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--flareite-editor-background);
+  color: var(--flareite-editor-foreground);
+}
+
+.toolbar {
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.toolbar > .flareite-group {
+  flex: none;
+}
+
+.goto {
+  width: 12ch;
+}
+
+.find {
+  width: 18ch;
+}
+
+.matches {
+  min-width: 7ch;
+  padding: 0 4px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.mode {
+  min-width: 4.5ch;
+  font-family: var(--flareite-font-mono);
+  font-size: var(--flareite-font-size-ui-small);
+}
+
+#find-hex,
+#find-case {
+  min-width: 3ch;
+  font-family: var(--flareite-font-mono);
+  font-size: var(--flareite-font-size-ui-small);
+}
+
+/* The cursor's offset and the selection, cut short when the tab is narrow. */
+.status {
+  flex: 1 1 0;
+  min-width: 0;
+  padding-left: 8px;
+  overflow: hidden;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.grid {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  outline: none;
+  font-family: var(--flareite-font-mono);
+  font-size: var(--flareite-font-size-editor, 13px);
+  --row: 20px;
+  --cell: 2.6ch;
+}
+
+.grid:focus-visible {
+  box-shadow: inset 0 0 0 1px var(--flareite-focus-ring);
+}
+
+.columns,
+.row {
+  display: flex;
+  align-items: center;
+  height: var(--row);
+  padding: 0 12px;
+  white-space: pre;
+}
+
+.columns {
+  flex: none;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--flareite-border);
+  color: var(--flareite-editor-line-number);
+  user-select: none;
+}
+
+.scroller {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow-x: auto;
+  overflow-y: scroll;
+}
+
+/* The column headings and rows stay in view; the spacer under them gives
+   the scroll bar its length, and the page draws the rows at the position
+   scrolled to. Sideways, they scroll as one when the tab is narrow. */
+.view {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  width: max-content;
+  min-width: 100%;
+  height: 100%;
+  overflow: hidden;
+  user-select: none;
+}
+
+.rows {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.spacer {
+  width: 1px;
+}
+
+.text-heading {
+  flex: none;
+}
+
+.offset {
+  flex: none;
+  width: 10ch;
+  margin-right: 2ch;
+  color: var(--flareite-editor-line-number);
+}
+
+.hex,
+.text {
+  display: flex;
+  flex: none;
+}
+
+.hex {
+  margin-right: 2ch;
+}
+
+.hex > span {
+  width: var(--cell);
+  text-align: center;
+}
+
+/* A gap after each 8 bytes. */
+.hex > span:nth-child(8n):not(:last-child) {
+  margin-right: 1ch;
+}
+
+.text > span {
+  width: 1ch;
+  text-align: center;
+}
+
+.hex > span,
+.text > span {
+  border-radius: 2px;
+}
+
+.zero {
+  color: var(--flareite-text-ignored, var(--flareite-text-muted));
+}
+
+.control {
+  color: var(--flareite-text-muted);
+}
+
+.missing {
+  color: var(--flareite-text-muted);
+}
+
+.selected {
+  background: var(--flareite-editor-selection);
+}
+
+.match {
+  background: var(--flareite-editor-find-match);
+}
+
+.match.current {
+  background: var(--flareite-editor-find-match-current);
+}
+
+/* The cursor: solid in the column typed in, outlined in the other. */
+.cursor {
+  box-shadow: inset 0 0 0 1px var(--flareite-editor-cursor);
+}
+
+.grid:focus .cursor.active {
+  background: var(--flareite-editor-cursor);
+  color: var(--flareite-editor-background);
+}
+
+/* A half-typed byte. */
+.pending {
+  text-decoration: underline;
+}
+
+.columns .hex > span.current-column,
+.columns .text > span.current-column {
+  color: var(--flareite-editor-line-number-active);
+}
+
+.row .offset.current-row {
+  color: var(--flareite-editor-line-number-active);
+}
+
+.problem {
+  position: absolute;
+  inset: 40% 16px auto;
+  margin: 0;
+  color: var(--flareite-text-muted);
+  font-family: var(--flareite-font-ui);
+  text-align: center;
+}
+
+.inspector {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  width: 220px;
+  border-left: 1px solid var(--flareite-border);
+  background: var(--flareite-sidebar-background, var(--flareite-editor-background));
+  overflow: auto;
+}
+
+.inspector[hidden] {
+  display: none;
+}
+
+.inspector__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px 4px 12px;
+  color: var(--flareite-sidebar-header-foreground, var(--flareite-text));
+  font-size: var(--flareite-font-size-ui-small);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+#endian {
+  font-family: var(--flareite-font-mono);
+  font-size: var(--flareite-font-size-ui-small);
+}
+
+.inspector__values {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3px 12px;
+  margin: 0;
+  padding: 4px 12px 12px;
+  font-size: var(--flareite-font-size-ui-small);
+}
+
+.inspector__values dt {
+  color: var(--flareite-text-muted);
+  white-space: nowrap;
+}
+
+.inspector__values dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-family: var(--flareite-font-mono);
+  user-select: text;
+}
